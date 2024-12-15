@@ -9,9 +9,10 @@ import com.library.system.repository.DTO.BorrowDTo;
 import com.library.system.repository.LibraryItemRepository;
 import com.library.system.repository.UserRepository;
 import com.library.system.utils.ConvertDate;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,14 +31,14 @@ public class BookService {
     @Autowired
     private UserRepository userRepository;
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void borrowingBook(BorrowDTo borrowDTo) {
         Book book = (Book) getLibraryItem(borrowDTo.getBookId());
         Predicate<Book.Status> existBook = bookStatus -> book.getStatus() == Book.Status.EXIST;
         if (existBook.test(book.getStatus())) {
             book.setStatus(Book.Status.BORROWED);
             User user = userRepository.findByUsername(borrowDTo.getUsername());
-            Borrow borrow = new Borrow(user, book, ConvertDate.convertStringToDate(borrowDTo.getReturnDate()), ConvertDate.convertStringToDate(borrowDTo.getLoanDate()));
+            Borrow borrow = new Borrow(user, book, null, ConvertDate.convertStringToDate(borrowDTo.getLoanDate()));
             borrowRepository.save(borrow);
             libraryItemRepository.save(book);
         } else {
@@ -93,6 +94,14 @@ public class BookService {
 
     public List<LibraryItem> getAllBooks() {
         return libraryItemRepository.findLibraryItemsByType(LibraryItem.LibraryItemType.BOOK);
+    }
+
+    public Object[] getAllLoansParticularUser(Integer userId){
+        return borrowRepository.allLoansParticularUser(userId);
+    }
+
+    public Double findAverageBorrowCount(){
+        return borrowRepository.findAverageBorrowCount();
     }
 
 }

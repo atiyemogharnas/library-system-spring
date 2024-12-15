@@ -47,5 +47,25 @@ public class BookController {
         }
     }
 
+    @GetMapping("/all-loans-particular-user")
+    public ResponseEntity<Object[]> getAllLoansParticularUser(@RequestParam Integer userId) {
+        try {
+            return ResponseEntity.ok(bookService.getAllLoansParticularUser(userId));
+        } catch (IllegalArgumentException ex) {
+            log.error("Error get all loans particular user: {}", ex.getMessage());
+            return null;
+        }
+    }
+
+    @GetMapping("/find-average-borrow-count")
+    public ResponseEntity<Double> findAverageBorrowCount() {
+        try {
+            return ResponseEntity.ok(bookService.findAverageBorrowCount());
+        } catch (IllegalArgumentException ex) {
+            log.error("Error for average: {}", ex.getMessage());
+            return null;
+        }
+    }
+
 
 }

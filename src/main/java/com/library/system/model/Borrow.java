@@ -19,13 +19,13 @@ public class Borrow {
     @ManyToOne
     Book book;
     private Date returnDate;
-    private Date loamDate;
+    private Date loanDate;
 
-    public Borrow(User user, Book book, Date returnDate, Date loamDate) {
+    public Borrow(User user, Book book, Date returnDate, Date loanDate) {
         this.user = user;
         this.book = book;
         this.returnDate = returnDate;
-        this.loamDate = loamDate;
+        this.loanDate = loanDate;
     }
 
     public Borrow() {
