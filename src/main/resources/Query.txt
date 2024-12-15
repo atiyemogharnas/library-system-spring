@@ -1,0 +1,45 @@
+SELECT * FROM book
+select * From book WHERE book.`status` = 'BORROWED'
+SELECT book.author,book.title,borrow.loanDate,borrow.returnDate FROM borrow JOIN book on book.book_id = borrow.book_id WHERE borrow.user_id = 1 AND book.`status` = 'BORROWED'
+SELECT borrow.returnDate from borrow
+SELECT COUNT(*) as numberofbook, book_id from borrow GROUP BY book_id ORDER BY numberofbook DESC
+SELECT COUNT(*) as numberofbook, borrow.user_id FROM borrow GROUP BY borrow.user_id 
+SELECT book.book_id From book WHERE NOT EXISTS (SELECT borrow.book_id from borrow WHERE borrow.book_id = book.book_id)
+SELECT book.book_id
+FROM book
+LEFT JOIN borrow ON book.book_id = borrow.book_id
+WHERE borrow.book_id IS NULL;
+select borrow.returnDate, book.title, book.author from borrow join book on borrow.book_id = book.book_id where borrow.user_id = 1
+SELECT AVG(mycount) FROM (SELECT borrow.user_id, COUNT(*) AS mycount FROM borrow GROUP BY borrow.user_id) AS subquery;
+SELECT MAX(mycount) FROM (SELECT borrow.user_id, COUNT(*) AS mycount FROM borrow GROUP BY borrow.user_id) AS subquery;
+SELECT book.author,book.title,borrow.loanDate,borrow.returnDate FROM borrow JOIN book on book.book_id = borrow.book_id WHERE borrow.user_id = 1 AND book.`status` = 'BORROWED' And borrow.returnDate> '2024-12-20 12:00:00'
+SELECT book_id from borrow where borrow.returnDate > CURRENT_TIMESTAMP
+SELECT book.book_id, borrow.user_id, borrow.returnDate,borrow.loanDate From book join borrow on book.book_id= borrow.book_id WHERE EXISTS (SELECT borrow.book_id from borrow WHERE borrow.book_id = book.book_id)
+
+
+START TRANSACTION;
+INSERT INTO borrow(borrow_id, book_id, user_id, returnDate, loanDate) VALUES(10,5,2,'2024-12-01 12:00:00', '2024-11-01 10:14:02');
+UPDATE borrow SET borrow.loanDate ='2024-11-20 10:14:02' WHERE borrow.borrow_id = 8;
+COMMIT;
+
+
+UPDATE book set book.`status` = 'EXIST' where book.book_id = 5  
+
+DELIMITER $$
+CREATE TRIGGER trigger_updateDate  
+AFTER UPDATE ON book   
+FOR EACH ROW  
+BEGIN  
+    UPDATE borrow 
+    SET returnDate = CURRENT_TIMESTAMP
+    WHERE book_id = NEW.book_id ;
+END$$
+DELIMITER ;
+
+
+CREATE VIEW BorrowBook AS
+SELECT book.book_id, book.title, book.author,borrow.returnDate, borrow.loanDate
+FROM borrow JOIN book on borrow.book_id = book.book_id
+WHERE book.`status` = 'BORROWED';
+
+SELECT * FROM borrowbook WHERE borrowbook.returnDate BETWEEN '2024-12-01 12:00:00' AND '2024-12-10 12:00:00'
