@@ -31,7 +31,7 @@ public class BookService {
     @Autowired
     private UserRepository userRepository;
 
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = Exception.class)
     public void borrowingBook(BorrowDTo borrowDTo) {
         Book book = (Book) getLibraryItem(borrowDTo.getBookId());
         Predicate<Book.Status> existBook = bookStatus -> book.getStatus() == Book.Status.EXIST;
