@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/libraryItem")
+@RequestMapping("/librarySystem/item")
 @Slf4j
 public class ItemController {
 
