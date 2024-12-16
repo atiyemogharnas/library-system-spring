@@ -48,14 +48,19 @@ public class BookService {
 
     public void returnedBook(BorrowDTo borrowDTo) {
         Book book = (Book) getLibraryItem(borrowDTo.getBookId());
+        User user = userRepository.findByUsername(borrowDTo.getUsername());
         Predicate<Book.Status> borrowedBook = bookStatus -> book.getStatus() == Book.Status.BORROWED;
         if (borrowedBook.test(book.getStatus())) {
             book.setStatus(Book.Status.EXIST);
             assert borrowDTo.getId() != null;
-            Borrow borrow = borrowRepository.findById(borrowDTo.getId()).orElse(null);
-            assert borrow != null;
-            borrow.setReturnDate(ConvertDate.convertStringToDate(borrowDTo.getReturnDate()));
-            borrowRepository.save(borrow);
+
+            Optional<Borrow> borrow = borrowRepository.getBorrowByUserAndBookAndReturnDateNull(user, book);
+            if (borrow.isPresent()) {
+                borrow.get().setReturnDate(ConvertDate.convertStringToDate(borrowDTo.getReturnDate()));
+            } else {
+                throw new RuntimeException("It is not possible to return book");
+            }
+            borrowRepository.save(borrow.get());
             libraryItemRepository.save(book);
         } else {
             throw new RuntimeException("This book is not borrowed");
@@ -96,11 +101,11 @@ public class BookService {
         return libraryItemRepository.findLibraryItemsByType(LibraryItem.LibraryItemType.BOOK);
     }
 
-    public Object[] getAllLoansParticularUser(Integer userId){
+    public Object[] getAllLoansParticularUser(Integer userId) {
         return borrowRepository.allLoansParticularUser(userId);
     }
 
-    public Double findAverageBorrowCount(){
+    public Double findAverageBorrowCount() {
         return borrowRepository.findAverageBorrowCount();
     }
 

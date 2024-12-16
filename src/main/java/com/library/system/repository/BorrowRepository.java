@@ -1,9 +1,13 @@
 package com.library.system.repository;
 
+import com.library.system.model.Book;
 import com.library.system.model.Borrow;
+import com.library.system.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
 
 @Repository
 public interface BorrowRepository extends JpaRepository<Borrow, Integer> {
@@ -17,5 +21,7 @@ public interface BorrowRepository extends JpaRepository<Borrow, Integer> {
 
     @Query(value = "SELECT AVG(mycount) FROM (SELECT user_id, COUNT(*) AS mycount FROM Borrow GROUP BY user_id) AS subquery", nativeQuery = true)
     Double findAverageBorrowCount();
+
+    Optional<Borrow> getBorrowByUserAndBookAndReturnDateNull(User user, Book book);
 
 }
